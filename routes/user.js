@@ -11,7 +11,7 @@ function generateAccessToken(username) {
 
 router.post("/", async (req, res) => {
   const { username, password } = req.body;
-  if (!username || !password) return res.status(400).send("Username oder Passwort fehlt");
+  if (!username || !password) return res.status(400).json({ message: "Username oder Passwort fehlt", message_code: 1 });
 
   try {
     console.log(db);
@@ -19,13 +19,13 @@ router.post("/", async (req, res) => {
       "SELECT * FROM user WHERE username = ? AND password = ?",
       [username, password]
     );
-    if (rows.length === 0) return res.status(401).send("Falsche Login-Daten");
+    if (rows.length === 0) return res.status(401).json({ message: "Falsche Login-Daten", message_code: 1 });
 
     const token = generateAccessToken({ username });
     res.json({ token });
   } catch (err) {
     console.error("DB-Fehler:", err);
-    res.status(500).send("DB-Fehler");
+    res.status(500).json({ message: "DB-Fehler", message_code: 1 });
   }
 });
 
